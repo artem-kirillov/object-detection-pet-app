@@ -1,6 +1,7 @@
 import argparse
 import collections
 import logging
+import time
 
 import cv2
 import numpy as np
@@ -12,6 +13,28 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logg
 
 Box = collections.namedtuple('Box', ['y_min', 'x_min', 'y_max', 'x_max'])
 Object = collections.namedtuple('Object', ['box', 'name', 'score'])
+
+
+class FPS(object):
+    def __init__(self):
+        self._start = None
+        self._stop = None
+        self._num_frames = 0
+
+    def start(self):
+        self._start = time.time()
+
+    def is_started(self):
+        return self._start is not None
+
+    def update(self):
+        self._num_frames += 1
+
+    def stop(self):
+        self._stop = time.time()
+
+    def get_fps(self):
+        return int(round(self._num_frames / (time.time() - self._start)))
 
 
 class WebCamStream(object):
@@ -138,14 +161,22 @@ class BoxDrawing(object):
 class Renderer(object):
     def __init__(self, window_name='Video'):
         self._window_name = window_name
+        self._fps_meter = FPS()
+        self._font = cv2.FONT_HERSHEY_SIMPLEX
 
     def render(self, frame):
+        if not self._fps_meter.is_started():
+            self._fps_meter.start()
+        cv2.putText(frame, text='FPS={}f/s'.format(self._fps_meter.get_fps()), org=(6, 10), fontFace=self._font,
+                    fontScale=0.3, color=(0, 0, 0), thickness=1)
         cv2.imshow(self._window_name, frame)
+        self._fps_meter.update()
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self._fps_meter.stop()
         cv2.destroyAllWindows()
 
 
