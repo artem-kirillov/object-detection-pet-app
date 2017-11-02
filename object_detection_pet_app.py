@@ -206,9 +206,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    drawing = BoxDrawing((args.width, args.height))
+    drawing = BoxDrawing(args.resolution)
 
-    with WebCamStream(args.video_source, (args.width, args.height)) as stream:
+    with WebCamStream(args.video_source, args.resolution) as stream:
         with ObjectDetector(args.model_path, args.labels_path) as detector:
             with Renderer() as renderer:
                 loop(stream, detector, drawing, renderer)
