@@ -50,6 +50,7 @@ class WebCamStream(object):
 
     def capture_frame(self):
         ret, frame = self.stream.read()
+        frame = cv2.flip(frame, flipCode=1)
         return frame
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -188,7 +189,7 @@ def loop(stream, detector, drawing, renderer):
         rendered_frame = drawing.render(frame, boxes, classes, scores, detector.category_index())
         renderer.render(rendered_frame)
 
-        if cv2.waitKey(25) & 0xFF == 27:
+        if cv2.waitKey(1) & 0xFF == 27:
             break
 
 
