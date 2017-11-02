@@ -196,8 +196,8 @@ def loop(stream, detector, drawing, renderer):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--video-source', type=int, default=0, help='Video device ID')
-    parser.add_argument('--width', type=int, default=480, help='Input / output video width')
-    parser.add_argument('--height', type=int, default=360, help='Input / output video height')
+    parser.add_argument('--resolution', type=lambda x: tuple(x.split('x')), default=(480, 360),
+                        help='Input / output video resolution')
     parser.add_argument('--model-path', type=str, required=True, help='TF model path')
     parser.add_argument('--labels-path', type=str, required=True, help='Model labels path')
 
